@@ -9,5 +9,5 @@ This is the only repo which has only a `main` branch. It is designed to be inclu
 git submodule add -b main https://github.com/ringier-data/rcplus-ci-shared.git
 ```
 
-NOTE: it is important to add submodule using `https` instead of `git`. Because the AWS CodeBuild agent does not have an SSH key to access
-Github.
+NOTE: it is important to add submodule using `https` instead of `git` protocol. Because the AWS CodeBuild agent does not have an SSH key  
+to access Github.
