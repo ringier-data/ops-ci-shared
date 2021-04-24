@@ -1,6 +1,6 @@
 # rcplus-ci-shared
 
-**Current version: 0.0.0**
+**Current version: 0.0.1**
 
 This repository hosts the CI/CD shell scripts for projects to be deployed into AWS.
 
