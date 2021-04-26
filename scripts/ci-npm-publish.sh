@@ -10,7 +10,7 @@ if [[ -z "$source_folder" ]]; then
 fi
 
 if [[ $(cat /tmp/is_deploy_flag 2>/dev/null) != "1" ]]; then
-  echo "Skipping deploy as FORCE_DEPLOY is not set and branch isn't develop or master"
+  echo "Skipping deploy as FORCE_DEPLOY is not set and branch isn't develop or main"
   exit 0
 fi
 
@@ -37,7 +37,7 @@ if [[ -z "$package_version_remote" ]]; then
   to_publish=1
 fi
 
-if [[ ${CODEBUILD_WEBHOOK_HEAD_REF} == "refs/heads/master" ]]; then
+if [[ ${CODEBUILD_WEBHOOK_HEAD_REF} == "refs/heads/main" ]]; then
   if ((to_publish == 0)); then
     echo Package exists, tagging "$package_name"@"$package_version" as "latest"
     npm dist-tag add "$package_name"@"$package_version" latest

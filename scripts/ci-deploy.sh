@@ -13,8 +13,12 @@ if [[ -z ${ENV} ]]; then
 fi
 
 if [[ $(cat /tmp/is_deploy_flag 2>/dev/null) != "1" ]]; then
-  echo "Skipping deploy as FORCE_DEPLOY is not set and branch isn't develop or master"
+  echo "Skipping deploy as FORCE_DEPLOY is not set and branch isn't develop or main"
   exit 0
+fi
+
+if [[ -z ${ANSIBLE_FOLDERS} ]]; then
+  ANSIBLE_FOLDERS="infrastructure"
 fi
 
 # shellcheck source=.
@@ -23,9 +27,9 @@ fi
 pip --quiet --disable-pip-version-check --no-color install ansible boto3 requests pyyaml awscli netaddr
 
 # install the collection for CI/CD
-ansible-galaxy collection install git+https://github.com/ringier-data/ops-aws-cicd.git,main
+ansible-galaxy collection install --force git+https://github.com/ringier-data/ops-aws-cicd.git,main
 
-MODULES=("${infrastructure//,/ }")
+MODULES=("${ANSIBLE_FOLDERS//,/ }")
 
 for module in "${MODULES[@]}"; do
   echo Deploying "${module}" module...

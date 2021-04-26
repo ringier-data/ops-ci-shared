@@ -12,7 +12,7 @@ if [[ -f /tmp/is_deploy_flag ]]; then
 fi
 
 if [[ ${CODEBUILD_WEBHOOK_HEAD_REF} == "refs/heads/develop" ]] ||
-  [[ ${CODEBUILD_WEBHOOK_HEAD_REF} == "refs/heads/master" ]] ||
+  [[ ${CODEBUILD_WEBHOOK_HEAD_REF} == "refs/heads/main" ]] ||
   [[ ${FORCE_DEPLOY} == "1" ]] ||
   [[ ${FORCE_DEPLOY} == "true" ]]; then
   echo "1" > /tmp/is_deploy_flag
