@@ -1,6 +1,6 @@
 # ops-ci-shared
 
-**Current version: 0.0.3**
+**Current version: 1.0.0**
 
 This repository hosts the CI/CD shell scripts for projects to be deployed into AWS.
 
