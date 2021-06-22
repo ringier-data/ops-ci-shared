@@ -12,16 +12,16 @@ if [[ -z ${AWS_REGION} ]]; then
   exit 2
 fi
 
-ACCOUNT_ID=$(aws --region ${AWS_REGION} sts get-caller-identity --output json | jq -crM '.Account')
+ACCOUNT_ID=$(aws --region "${AWS_REGION}" sts get-caller-identity --output json | jq -crM '.Account')
 if [[ -z ${ACCOUNT_ID} ]] || [[ ${ACCOUNT_ID} == "null" ]]; then
   echo "Fatal error: no active AWS cli session is detected"
   exit 3
 fi
 
 # Validate the environment is consistent between the local setting (the wish) and the active remote target (the reality)
-TARGET_ENV=$(aws --region "${AWS_REGION}" ssm get-parameter --output json --name /rcplus/environment 2>/dev/null | jq -crM '.Parameter.Value')
+TARGET_ENV=$(aws --region "${AWS_REGION}" ssm get-parameter --output json --name /ops-ci/environment 2>/dev/null | jq -crM '.Parameter.Value')
 if [[ -z ${TARGET_ENV} ]]; then
-  echo "Fatal error: the current AWS account '${ACCOUNT_ID}' is not for RingierConnect+"
+  echo "Fatal error: the current AWS account '${ACCOUNT_ID}' does not have environment code setting at /ops-ci/environment"
   exit 4
 fi
 

@@ -77,7 +77,7 @@ slack_body=$(cat << EOF
 EOF
 )
 
-slack_webhook=$(aws --region "${AWS_REGION}" ssm get-parameter --output json --name "/rcplus/ci/slack-webhook-notifications" --with-decryption | jq -crM '.Parameter.Value')
+slack_webhook=$(aws --region "${AWS_REGION}" ssm get-parameter --output json --name "/ops-ci/slack-webhook-notifications" --with-decryption | jq -crM '.Parameter.Value')
 # shellcheck disable=SC1083
 response=$(curl --write-out %{http_code} --silent --output /dev/null --request POST --header 'Content-Type: application/json' --data "$slack_body" "${slack_webhook}")
 

@@ -27,16 +27,17 @@ echo /tmp/is_deploy_flag: \"$(cat /tmp/is_deploy_flag 2>/dev/null)\"
 # Setup npmrc
 if [[ ! -f ~/.npmrc ]]; then
   echo "Creating ~/.npmrc"
-  github_token=$(aws --region "$AWS_REGION" ssm get-parameter --output json --name "/rcplus/ci/github-access-token" --with-decryption | jq -crM '.Parameter.Value')
+  github_token=$(aws --region "${AWS_REGION}" ssm get-parameter --output json --name /ops-ci/github-access-token --with-decryption | jq -crM '.Parameter.Value')
   echo "//npm.pkg.github.com/:_authToken=$github_token" >>~/.npmrc
-  echo "@ringier-data:registry=https://npm.pkg.github.com" >>~/.npmrc
+  github_org=$(aws --region "${AWS_REGION}" ssm get-parameter --output json --name /ops-ci/github-organization 2>/dev/null | jq -crM '.Parameter.Value')
+  echo "@$github_org:registry=https://npm.pkg.github.com" >>~/.npmrc
 else
   echo "Skipping ~/.npmrc as already exists"
 fi
 
 # Login into Docker/ECR
-registry_uri=$(aws --region "$AWS_REGION" sts get-caller-identity --output json | jq -r '.Account').dkr.ecr.${AWS_REGION}.amazonaws.com
-password=$(aws --region "$AWS_REGION" ecr get-login-password 2>/dev/null)
+registry_uri=$(aws --region "${AWS_REGION}" sts get-caller-identity --output json | jq -r '.Account').dkr.ecr.${AWS_REGION}.amazonaws.com
+password=$(aws --region "${AWS_REGION}" ecr get-login-password 2>/dev/null)
 if [[ -z ${password} ]]; then
     echo "No credential retrieved. This is ok if this is the very first run at a new AWS account."
 else

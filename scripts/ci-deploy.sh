@@ -27,7 +27,7 @@ fi
 pip --quiet --disable-pip-version-check --no-color install ansible boto3 requests pyyaml awscli netaddr
 
 # install the collection for CI/CD
-ansible-galaxy collection install --force git+https://github.com/ringier-data/ops-aws-cicd.git,main
+ansible-galaxy collection install --force git+https://github.com/ringier-data/ops-ci-aws.git,main
 
 MODULES=("${ANSIBLE_FOLDERS//,/ }")
 
