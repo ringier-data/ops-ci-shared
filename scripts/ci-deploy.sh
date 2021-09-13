@@ -50,6 +50,7 @@ for module in "${MODULES[@]}"; do
     ansible-playbook -e env="$ENV" -v playbook.yml
   else
     echo "No deployable unit found in ./${module}"
+    exit 1
   fi
 
   popd
