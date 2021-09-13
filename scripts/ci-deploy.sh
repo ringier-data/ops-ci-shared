@@ -2,7 +2,6 @@
 
 set -e
 
-cdk_app_dir="cdk-app" # it is expected that the CDK app in a repository is found from this folder
 dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 
 # shellcheck source=.
@@ -22,9 +21,7 @@ if [[ -z ${ANSIBLE_FOLDERS} ]]; then
   ANSIBLE_FOLDERS="infrastructure"
 fi
 
-if [[ -d ${cdk_app_dir} ]]; then
-  INFRASTRUCTURE_FOLDERS=${cdk_app_dir}
-elif [[ -z ${INFRASTRUCTURE_FOLDERS} ]]; then
+if [[ -z ${INFRASTRUCTURE_FOLDERS} ]]; then
   INFRASTRUCTURE_FOLDERS=${ANSIBLE_FOLDERS}
 fi
 
@@ -38,17 +35,10 @@ for module in "${MODULES[@]}"; do
   pushd "${module}"
 
   if [[ -f "./package.json" && -f "./package-lock.json" ]]; then
-    echo "CDK app detected..."
-
-    echo "Installing dependencies..."
     npm --no-color ci
-
     npm --no-color run cdk diff -- --context env=${ENV}
-
-    echo "Deploying to env=${ENV}..."
     npm --no-color run cdk deploy --all --require-approval=never -- --context env=${ENV}
-  else
-    echo "Deploying Ansible module..."
+  elif [[ -f "./playbook.yml" ]]; then
     pip --quiet --disable-pip-version-check --no-color install ansible boto3 requests pyyaml awscli netaddr
 
     # install the collection for CI/CD
@@ -57,13 +47,9 @@ for module in "${MODULES[@]}"; do
     if [[ -f "requirements.txt" ]]; then
       pip install -r requirements.txt
     fi
-
-    if [[ -f "playbook.yml" ]]; then
-      ansible-playbook -e env="$ENV" -v playbook.yml
-    else
-      echo "Could not find playbook.yml!"
-      exit 1
-    fi
+    ansible-playbook -e env="$ENV" -v playbook.yml
+  else
+    echo "No deployable unit found in ./${module}"
   fi
 
   popd
