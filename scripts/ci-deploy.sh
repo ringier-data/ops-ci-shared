@@ -37,7 +37,7 @@ for module in "${MODULES[@]}"; do
   if [[ -f "./package.json" && -f "./package-lock.json" ]]; then
     npm --no-color ci
     npm --no-color run cdk diff -- --context env=${ENV}
-    npm --no-color run cdk deploy --all --require-approval=never -- --context env=${ENV}
+    npm --no-color run cdk deploy -- --all --require-approval=never --context env=${ENV}
   elif [[ -f "./playbook.yml" ]]; then
     pip --quiet --disable-pip-version-check --no-color install ansible boto3 requests pyyaml awscli netaddr
 
