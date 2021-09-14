@@ -30,6 +30,16 @@ fi
 
 MODULES=("${INFRASTRUCTURE_FOLDERS//,/ }")
 
+# check that each module contains something deployable
+for module in "${MODULES[@]}"; do
+  pushd "${module}"
+  if ! { [[ -f "./package.json" && -f "./package-lock.json" ]] || [[ -f "./playbook.yml" ]]; }; then
+    echo "No deployable unit found in ./${module}. Nothing will be deployed."
+    exit 1
+  fi
+  popd
+done
+
 for module in "${MODULES[@]}"; do
   echo Deploying "${module}" module...
   pushd "${module}"
@@ -38,7 +48,7 @@ for module in "${MODULES[@]}"; do
     npm --no-color ci
     npm --no-color run cdk diff -- --context env=${ENV}
     npm --no-color run cdk deploy -- --all --require-approval=never --context env=${ENV}
-  elif [[ -f "./playbook.yml" ]]; then
+  else
     pip --quiet --disable-pip-version-check --no-color install ansible boto3 requests pyyaml awscli netaddr
 
     # install the collection for CI/CD
@@ -48,9 +58,6 @@ for module in "${MODULES[@]}"; do
       pip install -r requirements.txt
     fi
     ansible-playbook -e env="$ENV" -v playbook.yml
-  else
-    echo "No deployable unit found in ./${module}"
-    exit 1
   fi
 
   popd
