@@ -21,29 +21,43 @@ if [[ -z ${ANSIBLE_FOLDERS} ]]; then
   ANSIBLE_FOLDERS="infrastructure"
 fi
 
+if [[ -z ${INFRASTRUCTURE_FOLDERS} ]]; then
+  INFRASTRUCTURE_FOLDERS=${ANSIBLE_FOLDERS}
+fi
+
 # shellcheck source=.
 . "$dir"/ci-include.sh
 
-pip --quiet --disable-pip-version-check --no-color install ansible boto3 requests pyyaml awscli netaddr
+MODULES=("${INFRASTRUCTURE_FOLDERS//,/ }")
 
-# install the collection for CI/CD
-ansible-galaxy collection install --force git+https://github.com/ringier-data/ops-ci-aws.git,main
-
-MODULES=("${ANSIBLE_FOLDERS//,/ }")
+# check that each module contains something deployable
+for module in "${MODULES[@]}"; do
+  pushd "${module}"
+  if ! { [[ -f "./package.json" && -f "./package-lock.json" ]] || [[ -f "./playbook.yml" ]]; }; then
+    echo "No deployable unit found in ./${module}. Nothing will be deployed."
+    exit 1
+  fi
+  popd
+done
 
 for module in "${MODULES[@]}"; do
   echo Deploying "${module}" module...
   pushd "${module}"
 
-  if [[ -f "requirements.txt" ]]; then
-    pip install -r requirements.txt
-  fi
-
-  if [[ -f "playbook.yml" ]]; then
-    ansible-playbook -e env="$ENV" -v playbook.yml
+  if [[ -f "./package.json" && -f "./package-lock.json" ]]; then
+    npm --no-color ci
+    npm --no-color run cdk diff -- --context env=${ENV}
+    npm --no-color run cdk deploy -- --all --require-approval=never --context env=${ENV}
   else
-    echo "Could not find playbook.yml!"
-    exit 1
+    pip --quiet --disable-pip-version-check --no-color install ansible boto3 requests pyyaml awscli netaddr
+
+    # install the collection for CI/CD
+    ansible-galaxy collection install --force git+https://github.com/ringier-data/ops-ci-aws.git,main
+
+    if [[ -f "requirements.txt" ]]; then
+      pip install -r requirements.txt
+    fi
+    ansible-playbook -e env="$ENV" -v playbook.yml
   fi
 
   popd
