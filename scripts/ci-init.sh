@@ -11,15 +11,17 @@ if [[ -f /tmp/is_deploy_flag ]]; then
   rm /tmp/is_deploy_flag
 fi
 
-if [[ ${CODEBUILD_WEBHOOK_HEAD_REF} == "refs/heads/develop" ]] ||
-  [[ ${CODEBUILD_WEBHOOK_HEAD_REF} == "refs/heads/main" ]] ||
-  [[ ${FORCE_DEPLOY} == "1" ]] ||
-  [[ ${FORCE_DEPLOY} == "true" ]]; then
+if [[ ${CODEBUILD_WEBHOOK_HEAD_REF} == "refs/heads/main" ]] && [[ ${ENV} == "stg" ]]; then
+  DEPLOYING="Will deploy (because: main on stg)"
   echo "1" > /tmp/is_deploy_flag
-  echo CODEBUILD_WEBHOOK_HEAD_REF=\""${CODEBUILD_WEBHOOK_HEAD_REF}"\", FORCE_DEPLOY=\""${FORCE_DEPLOY}"\". Will deploy.
+elif [[ ${FORCE_DEPLOY} == "1" ]] || [[ ${FORCE_DEPLOY} == "true" ]]; then
+  DEPLOYING="Will deploy (because: FORCE_DEPLOY)"
+  echo "1" > /tmp/is_deploy_flag
 else
-  echo CODEBUILD_WEBHOOK_HEAD_REF=\""${CODEBUILD_WEBHOOK_HEAD_REF}"\", FORCE_DEPLOY=\""${FORCE_DEPLOY}"\". Will not deploy.
+  DEPLOYING="Will not deploy"
 fi
+
+echo ENV=\""${ENV}"\", CODEBUILD_WEBHOOK_HEAD_REF=\""${CODEBUILD_WEBHOOK_HEAD_REF}"\", FORCE_DEPLOY=\""${FORCE_DEPLOY}"\". "${DEPLOYING}".
 
 # shellcheck disable=SC2046
 echo /tmp/is_deploy_flag: \"$(cat /tmp/is_deploy_flag 2>/dev/null)\"

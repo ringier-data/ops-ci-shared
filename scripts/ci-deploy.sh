@@ -13,7 +13,7 @@ if [[ -z ${ENV} ]]; then
 fi
 
 if [[ $(cat /tmp/is_deploy_flag 2>/dev/null) != "1" ]]; then
-  echo "Skipping deploy as FORCE_DEPLOY is not set and branch isn't develop or main"
+  echo "Skipping deploy as deployment flag is not set"
   exit 0
 fi
 
