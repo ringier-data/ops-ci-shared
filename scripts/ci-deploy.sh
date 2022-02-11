@@ -53,7 +53,7 @@ for module in "${MODULES[@]}"; do
     npm --no-color run cdk diff -- --context env=${ENV}
     npm --no-color run cdk deploy -- --all --require-approval=never --context env=${ENV}
   else
-    pip --quiet --disable-pip-version-check --no-color install ansible boto3 requests pyyaml awscli netaddr
+    pip --quiet --disable-pip-version-check --no-color install ansible boto3 requests pyyaml awscli netaddr aws-sam-cli
 
     # install the collection for CI/CD
     ansible-galaxy collection install --force git+https://github.com/ringier-data/ops-ci-aws.git,main
