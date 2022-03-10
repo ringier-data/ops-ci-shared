@@ -44,7 +44,7 @@ fi
 
 slack_body=$(cat << EOF
 {
-  "text": "${icon} *${repo}* (${ENV})",
+  "text": "${icon} *${repo}* (${PROJECT_ID}-${ENV})",
   "attachments": [
     {
       "color": "${color}",
