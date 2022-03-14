@@ -57,6 +57,7 @@ for module in "${MODULES[@]}"; do
 
     # install the collection for CI/CD
     ansible-galaxy collection install --force git+https://github.com/ringier-data/ops-ci-aws.git,main
+    ansible-galaxy collection install --upgrade ansible.posix community.aws community.general community.postgresql kubernetes.core
 
     if [[ -f "requirements.txt" ]]; then
       pip install -r requirements.txt
