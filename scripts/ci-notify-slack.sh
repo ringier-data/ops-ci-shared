@@ -7,10 +7,17 @@ dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 # shellcheck source=.
 . "$dir"/ci-safeguard.sh
 
+if [[ $(cat /tmp/is_deploy_flag 2>/dev/null) == "1" ]]; then
+    noun="Deploy"
+    icon=":rocket:"
+else
+    noun="Build"
+    icon=":hammer_and_wrench:"
+fi
+
 if [[ ${CODEBUILD_BUILD_SUCCEEDING} == "1" ]]; then
     color="#3fc380"
     adjective="succeeded"
-    icon=":rocket:"
     style="primary"
 else
     color="#FF0000"
@@ -19,11 +26,6 @@ else
     style="danger"
 fi
 
-if [[ $(cat /tmp/is_deploy_flag 2>/dev/null) == "1" ]]; then
-    noun="Deploy"
-else
-    noun="Build"
-fi
 
 # remove the deploy flag to avoid confusing the next deployment
 rm -f /tmp/is_deploy_flag
