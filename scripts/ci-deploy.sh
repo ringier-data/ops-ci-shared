@@ -29,6 +29,14 @@ if [[ -z ${INFRASTRUCTURE_FOLDERS} ]]; then
   INFRASTRUCTURE_FOLDERS=${ANSIBLE_FOLDERS}
 fi
 
+if [[ -z ${OPS_CI_AWS_BRANCH} ]]; then
+  OPS_CI_AWS_BRANCH="main"
+fi
+
+if [[ -z ${VERBOSITY} ]]; then
+  VERBOSITY="-v"
+fi
+
 # shellcheck source=.
 . "$dir"/ci-include.sh
 
@@ -56,13 +64,13 @@ for module in "${MODULES[@]}"; do
     pip --quiet --disable-pip-version-check --no-color install ansible boto3 requests pyyaml awscli netaddr aws-sam-cli dnspython
 
     # install the collection for CI/CD
-    ansible-galaxy collection install --force git+https://github.com/ringier-data/ops-ci-aws.git,main
+    ansible-galaxy collection install --force git+https://github.com/ringier-data/ops-ci-aws.git,"${OPS_CI_AWS_BRANCH}"
     ansible-galaxy collection install --upgrade ansible.posix community.aws community.general community.postgresql kubernetes.core
 
     if [[ -f "requirements.txt" ]]; then
       pip install -r requirements.txt
     fi
-    ansible-playbook -e env="$ENV" -v playbook.yml
+    ansible-playbook -e env="$ENV" "${VERBOSITY}" playbook.yml
   fi
 
   popd
