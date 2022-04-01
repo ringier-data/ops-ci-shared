@@ -33,8 +33,8 @@ if [[ -z ${OPS_CI_AWS_BRANCH} ]]; then
   OPS_CI_AWS_BRANCH="main"
 fi
 
-if [[ -z ${VERBOSITY} ]]; then
-  VERBOSITY="-v"
+if [[ -z ${ANSIBLE_VERBOSITY} ]]; then
+  ANSIBLE_VERBOSITY="-v"
 fi
 
 # shellcheck source=.
@@ -70,7 +70,7 @@ for module in "${MODULES[@]}"; do
     if [[ -f "requirements.txt" ]]; then
       pip install -r requirements.txt
     fi
-    ansible-playbook -e env="$ENV" "${VERBOSITY}" playbook.yml
+    ansible-playbook -e env="$ENV" "${ANSIBLE_VERBOSITY}" playbook.yml
   fi
 
   popd
