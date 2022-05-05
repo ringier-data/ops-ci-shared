@@ -7,11 +7,6 @@ dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 # shellcheck source=.
 . "$dir"/ci-safeguard.sh
 
-if [[ -z ${ENV} ]]; then
-  echo "Missing required env ENV"
-  exit 1
-fi
-
 if [[ $(cat /tmp/is_deploy_flag 2>/dev/null) != "1" ]]; then
   if [[ ${AGGRESSIVE_DEVELOPMENT} == "1" ]]; then
     echo "Skipping deploy as FORCE_DEPLOY is not set and branch isn't develop or main"
