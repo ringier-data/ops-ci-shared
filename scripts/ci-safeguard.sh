@@ -18,6 +18,9 @@ if [[ -z ${ACCOUNT_ID} ]] || [[ ${ACCOUNT_ID} == "null" ]]; then
   exit 3
 fi
 
+# exit with success earlier if no environment check is needed
+[[ ! -z ${SKIP_ENV_CHECK} ]] && exit 0
+
 # Validate the environment is consistent between the local setting (the wish) and the active remote target (the reality)
 TARGET_ENV=$(aws --region "${AWS_REGION}" ssm get-parameter --output json --name /ops-ci/environment 2>/dev/null | jq -crM '.Parameter.Value')
 if [[ -z ${TARGET_ENV} ]]; then
