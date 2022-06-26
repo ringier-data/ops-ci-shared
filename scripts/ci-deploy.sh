@@ -56,13 +56,11 @@ for module in "${MODULES[@]}"; do
     npm --no-color run cdk diff -- --context env=${ENV}
     npm --no-color run cdk deploy -- --all --require-approval=never --context env=${ENV}
   else
-    pip --quiet --disable-pip-version-check --no-color install ansible boto3 requests pyyaml netaddr aws-sam-cli dnspython
-    # force install typing-extensions==3.10.0.2 in order to avoid error in Ansible. Current installed at this point is 3.10.0.0
-    pip --no-color install -I typing-extensions==3.10.0.2
+    pip --quiet --disable-pip-version-check --no-color install --upgrade -r "$dir"/../misc/requirements/requirements.txt
 
     # install the collection for CI/CD
     ansible-galaxy collection install --force git+https://github.com/ringier-data/ops-ci-aws.git,"${OPS_CI_AWS_BRANCH}"
-    ansible-galaxy collection install --upgrade ansible.posix community.aws community.general community.postgresql kubernetes.core
+    ansible-galaxy collection install --upgrade ansible.posix community.aws amazon.aws community.general community.postgresql kubernetes.core
 
     if [[ -f "requirements.txt" ]]; then
       pip install -r requirements.txt
