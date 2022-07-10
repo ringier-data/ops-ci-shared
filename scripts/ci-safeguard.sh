@@ -31,4 +31,16 @@ if [[ -z ${SKIP_ENV_CHECK} ]]; then
     echo "Fatal error! Your current default AWS account is for '${TARGET_ENV}' but '${ENV}' is specified"
     exit 5
   fi
+
+  # Validate the project is consistent between the local setting (the wish) and the active remote target (the reality)
+  TARGET_PRJ=$(aws --region "${AWS_REGION}" ssm get-parameter --output json --name /ops-ci/project_id 2>/dev/null | jq -crM '.Parameter.Value')
+  if [[ -z ${TARGET_PRJ} ]]; then
+    echo "Fatal error: the current AWS account '${ACCOUNT_ID}' does not have project id setting at /ops-ci/project_id"
+    exit 6
+  fi
+
+  if [[ ${TARGET_PRJ} != "${PROJECT_ID}" ]]; then
+    echo "Fatal error! Your current default AWS account is for '${TARGET_PRJ}' but '${PROJECT_ID}' is specified"
+    exit 7
+  fi
 fi
