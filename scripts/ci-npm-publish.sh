@@ -30,7 +30,7 @@ pushd "${source_folder}"
 # collect package metadata. NOTE: the package_name is a scoped one.
 package_name=$(jq -crM '.name' <package.json)
 package_version=$(jq -crM '.version' <package.json)
-package_version_remote=$(npm info "$package_name"@"$package_version" version)
+package_version_remote=$(npm info "$package_name"@"$package_version" version || true)
 
 to_publish=0
 if [[ -z "$package_version_remote" ]]; then
