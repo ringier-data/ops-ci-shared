@@ -33,11 +33,7 @@ fi
 echo "Running tests in $source_folder"
 pushd "${source_folder}"
 
-if [[ -f "yarn.lock" ]]; then
-  echo "Detected node.js project. Will run tests with yarn..."
-  (( SKIP_INSTALL == 0 )) && FORCE_COLOR=0 yarn --emoji false --non-interactive --no-progress --frozen-lockfile
-  FORCE_COLOR=0 yarn --emoji false --non-interactive --no-progress test
-elif [[ -f "package-lock.json" ]]; then
+if [[ -f "package-lock.json" ]]; then
   echo "Detected node.js project. Will run tests with npm..."
   (( SKIP_INSTALL == 0 )) && npm --no-color --legacy-peer-deps ci
   npm --no-color test

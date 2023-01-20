@@ -57,7 +57,7 @@ for module in "${MODULES[@]}"; do
     npm --no-color run cdk deploy -- --all --require-approval=never --context env=${ENV}
   else
     if [[ OPS_CI_AWS_BRANCH != "main" ]]; then
-      # install the collection for CI/CD (the main branch is already baked into the CodeBuild custom image
+      # install the collection for CI/CD (the main branch is already baked into the CodeBuild custom image)
       ansible-galaxy collection install --force git+https://github.com/ringier-data/ops-ci-aws.git,"${OPS_CI_AWS_BRANCH}"
     fi
 
