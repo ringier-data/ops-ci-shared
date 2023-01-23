@@ -35,7 +35,7 @@ pushd "${source_folder}"
 
 if [[ -f "package-lock.json" ]]; then
   echo "Detected node.js project. Will run tests with npm..."
-  (( SKIP_INSTALL == 0 )) && npm --no-color --legacy-peer-deps ci
+  (( SKIP_INSTALL == 0 )) && npm --no-color ci
   npm --no-color test
 elif [[ -f "requirements.txt" ]]; then
   echo "Detected Python project. Will run pytest tests..."
