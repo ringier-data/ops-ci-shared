@@ -56,11 +56,10 @@ for module in "${MODULES[@]}"; do
     npm --no-color run cdk diff -- --context env=${ENV}
     npm --no-color run cdk deploy -- --all --require-approval=never --context env=${ENV}
   else
-    pip --quiet --disable-pip-version-check --no-color install --upgrade -r "$dir"/../misc/requirements/requirements.txt
-
-    # install the collection for CI/CD
-    ansible-galaxy collection install --force git+https://github.com/ringier-data/ops-ci-aws.git,"${OPS_CI_AWS_BRANCH}"
-    ansible-galaxy collection install --upgrade ansible.posix community.aws amazon.aws community.general community.postgresql kubernetes.core
+    if [[ ${OPS_CI_AWS_BRANCH} != "main" ]]; then
+      # install the collection for CI/CD (the main branch is already baked into the CodeBuild custom image)
+      ansible-galaxy collection install --force git+https://github.com/ringier-data/ops-ci-aws.git,"${OPS_CI_AWS_BRANCH}"
+    fi
 
     if [[ -f "requirements.txt" ]]; then
       pip install -r requirements.txt
