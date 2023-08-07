@@ -37,11 +37,12 @@ if [[ -f "package-lock.json" ]]; then
   echo "Detected node.js project. Will run tests with npm..."
   (( SKIP_INSTALL == 0 )) && npm --no-color ci
   npm --no-color test
-elif [[ -f "requirements.txt" ]]; then
+elif [[ -f "pyproject.toml" ]]; then
   echo "Detected Python project. Will run pytest tests..."
-  (( SKIP_INSTALL == 0 )) && pip install -r requirements.txt
-  pip install -U pytest python-dotenv pytest-dependency pytest-ordering
-  PYTHONPATH=. pytest -v
+  poetry config virtualenvs.create true
+  poetry config virtualenvs.in-project true
+  (( SKIP_INSTALL == 0 )) && poetry install --no-interaction --no-ansi
+  poetry run pytest
 else
   echo "ERROR: Could not determine test suite to run."
   exit 1
