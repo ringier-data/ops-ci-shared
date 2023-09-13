@@ -25,6 +25,9 @@ else
   if [[ ${CODEBUILD_WEBHOOK_HEAD_REF} == "refs/heads/main" ]] && [[ ${ENV} == "stg" ]]; then
     DEPLOYING="Will deploy (because: main on stg)"
     echo "1" > /tmp/is_deploy_flag
+  elif [[ ${CODEBUILD_WEBHOOK_HEAD_REF} == "refs/tags/v"* ]] && [[ ${ENV} == "prod" ]]; then
+    DEPLOYING="Will deploy (because: tag on prod)"
+    echo "1" > /tmp/is_deploy_flag
   elif [[ ${FORCE_DEPLOY} == "1" ]] || [[ ${FORCE_DEPLOY} == "true" ]]; then
     DEPLOYING="Will deploy (because: FORCE_DEPLOY)"
     echo "1" > /tmp/is_deploy_flag
