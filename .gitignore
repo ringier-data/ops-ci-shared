@@ -1,4 +1,5 @@
 ### Project-specific
+.lock-release
 
 ### Ansible template
 *.retry
