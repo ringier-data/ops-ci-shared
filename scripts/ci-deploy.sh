@@ -36,7 +36,7 @@ fi
 # shellcheck source=.
 . "$dir"/ci-include.sh
 
-MODULES=("${INFRASTRUCTURE_FOLDERS//,/ }")
+MODULES=(${INFRASTRUCTURE_FOLDERS//,/ })
 
 # check that each module contains something deployable
 for module in "${MODULES[@]}"; do
