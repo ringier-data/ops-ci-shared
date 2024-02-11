@@ -52,6 +52,33 @@ for module in "${MODULES[@]}"; do
   echo Deploying "${module}" module...
   pushd "${module}"
 
+  if [[ CHECK_CLOUDFORMATION -eq  "1" ]]; then
+    # check that CloudFormation stacks are up to date with the origin
+    if [[ $ENV == "dev" ]]; then
+      origin_branch="develop"
+    else
+      origin_branch="main"
+    fi
+    software_component=$(cat playbook.yml | grep 'software_component' | awk '{ print $2}' | sed "s/\"//g" | sed "s/'//g")
+    git_commits=($(git rev-parse origin/$origin_branch))
+    for stack in $(aws cloudformation list-stacks --output text --query 'StackSummaries[?contains(StackName, `'$software_component'`)].[StackName]'); do
+    git_commit=$(aws cloudformation describe-stacks --stack-name $stack --query 'Stacks[0].Tags[?contains(Key, `GitCommit`)][].Value' | jq -r '.[0]')
+    if [[ ! " ${git_commits[*]} " =~ " ${git_commit} " ]]; then
+        git_commits+=($git_commit)
+    fi
+    done
+
+    if [[ ${#git_commits} -gt 1 ]]; then
+        cf_commits_str=$(printf "%s\n"  "${git_commits[@]:1}")
+        read -p "origin/develop is at $(git rev-parse origin/develop). While on CloudFormation ${cf_commits_str} is deployed. Are you sure to continue? [yY] " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+                echo "Exiting..."
+            exit 1
+        fi
+    fi
+  fi
+
   if [[ -f "./package.json" && -f "./package-lock.json" ]]; then
     npm --no-color ci
     npm --no-color run cdk diff -- --context env=${ENV}
